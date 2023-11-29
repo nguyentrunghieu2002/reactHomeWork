@@ -41,7 +41,15 @@ const deleteF = async (idDelete) => {
 };
 
 const main = async () => {
-  await deleteF(3);
+  updateUser(1, { name: "rng" });
 };
 
 main();
+
+module.exports = {
+  readF,
+  writeF,
+  createUser,
+  updateUser,
+  deleteF,
+};
