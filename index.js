@@ -20,6 +20,7 @@ cors(app);
 //   res.json(data);
 // });
 
+//lay user theo ten
 // app.get("/user", async (req, res) => {
 //   const query = req.query;
 //   console.log(query);
@@ -30,6 +31,7 @@ cors(app);
 //   res.json(newData);
 // });
 
+//lay user theo tuoi
 app.get("/user", async (req, res) => {
   const query = req.query;
   const userAge = parseInt(query.age, 10);
@@ -38,6 +40,7 @@ app.get("/user", async (req, res) => {
   res.json(newData);
 });
 
+//tao moi 1 user
 app.post("/user", async (req, res) => {
   const body = req.body;
   await createUser(body);
@@ -47,6 +50,7 @@ app.post("/user", async (req, res) => {
   });
 });
 
+//update user theo id
 app.put("/user/:userId", async (req, res) => {
   const body = req.body;
   console.log(body);
@@ -62,6 +66,7 @@ app.put("/user/:userId", async (req, res) => {
 });
 app.patch;
 
+// xoa user
 app.delete("/user/:userId", async (req, res) => {
   const params = req.params;
   const userId = parseInt(params.userId, 10);
