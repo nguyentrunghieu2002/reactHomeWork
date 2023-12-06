@@ -24,8 +24,19 @@ const createUser = async (userinput) => {
 const updateUser = async (idUser, updateInfo) => {
   const oldData = await readF();
   const newData = oldData.map((user) => {
-    if (idUser === user.id) {
+    if (user.id == idUser) {
       return { ...user, ...updateInfo };
+    }
+    return user;
+  });
+  await writeF(newData);
+};
+
+const replaceUser = async (idUser, updateInfo) => {
+  const oldData = await readF();
+  const newData = oldData.map((user) => {
+    if (idUser === user.id) {
+      return { ...updateInfo, id: idUser };
     }
     return user;
   });
@@ -35,14 +46,30 @@ const updateUser = async (idUser, updateInfo) => {
 const deleteF = async (idDelete) => {
   const oldData = await readF();
   const newData = oldData.filter((user) => {
-    return user.id !== idDelete;
+    return user.id !== parseInt(idDelete, 10);
   });
   await writeF(newData);
 };
 
-const main = async () => {
-  updateUser(1, { name: "rng" });
+const userLogin = async (userName, password) => {
+  const oldData = await readF();
+  // const newData = oldData.find((user) => {
+  //   if (user.name === userName && user.pass === password) {
+  //     return user;
+  //   }
+  //   throw new Error("user not found");
+  // });
+  // return newData;
+  const user = oldData.find(
+    (user) => user.name === userName && user.pass === password
+  );
+  if (user) {
+    return user;
+  }
+  return null;
 };
+
+const main = async () => {};
 
 main();
 
@@ -52,4 +79,6 @@ module.exports = {
   createUser,
   updateUser,
   deleteF,
+  replaceUser,
+  userLogin,
 };
