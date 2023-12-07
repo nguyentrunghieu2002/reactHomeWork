@@ -1,3 +1,4 @@
+const { log } = require("console");
 var fs = require("fs");
 var path = require("path");
 const database = path.join(__dirname, "./database.json");
@@ -8,12 +9,10 @@ const readF = async () => {
 };
 
 const writeF = (data) => {
-  return fs.promises.writeFile(
-    database,
-    JSON.stringify(data, 4, null),
-    "utf-8"
-  );
+  return fs.promises.writeFile(database, JSON.stringify(daa, 4, null), "utf-8");
 };
+
+console.log("hello");
 
 const createUser = async (userinput) => {
   const oldData = await readF();
