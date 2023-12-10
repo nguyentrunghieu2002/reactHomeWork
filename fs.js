@@ -12,8 +12,6 @@ const writeF = (data) => {
   return fs.promises.writeFile(database, JSON.stringify(daa, 4, null), "utf-8");
 };
 
-console.log("hello");
-
 const createUser = async (userinput) => {
   const oldData = await readF();
   const newData = [userinput, ...oldData];

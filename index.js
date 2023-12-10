@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const {
   readF,
   writeF,
@@ -15,6 +16,18 @@ const {
 const { isNumber } = require("lodash");
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
+
+const {
+  readAll,
+  createUser2,
+  deleteUser,
+  updateUser2,
+  userLogin2,
+} = require("./mongodb_schema.js");
+
+const { connect } = require("./mongodb_connect.js");
+
+connect();
 
 const verifyUser = (req, res, next) => {
   if (!req?.headers?.authorization) {
@@ -39,9 +52,11 @@ cors(app);
 app.get("/user", async (req, res) => {
   const query = req.query;
   const params = req.params;
-  console.log(params);
-  console.log(query);
-  const data = await readF();
+  // const nameRex = new RegExp(query.name, "i");
+  // const data = await readAll({
+  //   nameRex,
+  // });
+  const data = await readAll();
   res.json(data);
 });
 
@@ -68,7 +83,7 @@ app.get("/user", async (req, res) => {
 //tao moi 1 user
 app.post("/user", async (req, res) => {
   const body = req.body;
-  await createUser(body);
+  await createUser2(body);
   console.log(body);
   res.json({
     message: "create user success",
@@ -76,11 +91,11 @@ app.post("/user", async (req, res) => {
 });
 
 //update user theo id
-app.put("/user", verifyUser, async (req, res) => {
+app.patch("/user/:userId", verifyUser, async (req, res) => {
   const body = req.body;
-  const params = req.user.id;
+  const { userId } = req.params;
 
-  await updateUser(params, body);
+  await updateUser2(userId, body);
   res.json({
     message: "update user success",
   });
@@ -94,9 +109,11 @@ app.delete("/user", verifyUser, async (req, res) => {
   // res.json({
   //   message: "delete user success",
   // });
-  const userId = req.user.id;
+  // const userId = req.user.id;
+  const userId = req.user._id;
+
   console.log(typeof userId);
-  deleteF(userId);
+  deleteUser(userId);
   res.json({
     message: "delete user success",
   });
@@ -106,13 +123,18 @@ app.delete("/user", verifyUser, async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const { name, pass } = req.body;
-    const user = await userLogin(name, pass);
+    const { userName, password } = req.body;
+
+    const user = await userLogin2(userName, password);
     //
-    var token = jwt.sign(user, PRIVATE_KEY, { algorithm: "HS256" });
+    console.log(user);
+    var token = jwt.sign(JSON.parse(JSON.stringify(user)), PRIVATE_KEY, {
+      algorithm: "HS256",
+    });
     res.json({
       data: user,
       token: token,
+      message: "login success",
     });
     console.log(token);
   } catch (error) {
@@ -139,9 +161,9 @@ app.post("/login", async (req, res) => {
 
 app.patch("/user", verifyUser, async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
     const body = req.body;
-    await updateUser(userId, body);
+    await updateUser2(userId, body);
     res.status(300).json({
       message: "replace user success",
     });
@@ -153,10 +175,18 @@ app.patch("/user", verifyUser, async (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const body = req.body;
-  createUser(body);
-
-  res.json({ message: "register success" });
+  try {
+    const body = req.body;
+    const user = await createUser2(body);
+    res.json({
+      message: "register success",
+      data: user,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    });
+  }
 });
 
 app.listen(3000, () => {
