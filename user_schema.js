@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
@@ -28,7 +27,7 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 const readAll = async (filter = {}) => {
-  const user = await User.find(filter, "name age role").lean();
+  const user = await User.find(filter).lean();
   return user;
 };
 
@@ -66,10 +65,23 @@ const deleteUser = async (id) => {
   return user;
 };
 
+const getUserById = (id) => {
+  return User.findById(id);
+};
+
+const login = async (userName, password) => {
+  return await User.findOne({
+    userName,
+    password,
+  }).lean();
+};
+
 module.exports = {
   readAll,
   createUser2,
   updateUser2,
   deleteUser,
   userLogin2,
+  getUserById,
+  login,
 };
